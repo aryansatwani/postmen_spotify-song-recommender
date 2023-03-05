@@ -1,0 +1,131 @@
+//server.js
+//where your node app starts
+
+// we've started you off with Express (https://expressjs.com/)
+// you can always use whatever libraries or frameworks you'd like through `package.json` > "Add package".
+const express = require("express");
+const axios = require("axios");
+const { getAccessToken } = require("./spotify/auth");
+const { searchArtists, getRecommendations } = require("./spotify/actions");
+
+const BASE_URL = "https://api.spotify.com/v1"
+
+const app = express();
+
+if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET) {
+  console.error(
+    "ERROR:Missing one or more critical Spotify enirvonment variables.Check .env"
+  );
+}
+
+
+
+app.use(express.json()); 
+
+
+app.use(express.static("public"));
+
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
+
+app.post("/recommendations", async (req, res) => {
+  if (!req.body) {
+    return res
+      .status(400)
+      .send({
+        message: "Bad request - must send a JSON body with track and artist",
+      });
+  }
+
+  const { artist1 , artist2 , artist3 } = req.body
+
+ 
+
+  if (!(artist1 && artist2 && artist3)) {
+    return res
+      .status(400)
+      .send({ message: "Bad request-must pass a  three singers" });
+  }
+
+  let accessToken;
+  try {
+    accessToken = await getAccessToken()
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ message: "Something went wrong when fetching access token" });
+  }
+
+  const http = axios.create({
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  let  artistId1,artistId2,artistId3 
+
+  try {
+    const result = await searchArtists(http,  artist1 );
+    console.log(artist1)
+    const { artists } = result
+
+    if (!artists || !artists.items || !artists.items.length) {
+      return res
+        .status(404)
+        .send({ messge: `${artist1} not found.` })}
+      artistId1 = artists.items[0].id; 
+    } catch(err) {
+      console.error(err.message)
+      return res.status(500).send({message:" Error when searching for artistId1"})
+    }
+ try {
+    const result = await searchArtists(http,  artist2 );
+   console.log(artist2)
+    const { artists } = result
+
+    if (!artists || !artists.items || !artists.items.length) {
+      return res
+        .status(404)
+        .send({ messge: `${artist2} not found.` })}
+      artistId1 = artists.items[0].id; 
+    } catch(err) {
+      console.error(err.message)
+      return res.status(500).send({message:" Error when searching for artistId2"})
+    }
+ 
+ try {
+    const result = await searchArtists(http,  artist3 );
+   console.log(artist3)
+    const { artists } = result
+
+    if (!artists || !artists.items || !artists.items.length) {
+      return res
+        .status(404)
+        .send({ messge: `${artist3} not found.` })}
+      artistId1 = artists.items[0].id; 
+    } catch(err) {
+      console.error(err.message)
+      return res.status(500).send({message:" Error when searching for artistId3"})
+    }
+    
+   
+ try {
+    const result = await getRecommendations(http, {  Id1: artistId1, Id2: artistId2, Id3: artistId3 });
+    const { tracks } = result;
+
+    if (!tracks || !tracks.length) {
+      return res.status(404).send({ message: "No recommendations found" });
+    }
+    return res.send({ tracks });
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ message: "Something went wrong when fetching recommendations" });
+  }
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`Example app listening at port ${process.env.PORT}`);
+});
