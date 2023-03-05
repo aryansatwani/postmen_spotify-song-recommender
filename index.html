@@ -1,0 +1,45 @@
+<!-- This is a static file -->
+<!-- served from your routes in server.js -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A song recommendation app">
+
+    <title>Spotify Songs Recommender</title>
+
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    
+    <!-- import the webpage's stylesheet (style.css) -->
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <main id="main-content">
+      <h1>Discover new tracks</h1>
+      <form id = "search-form" onsubmit="submitForm(event)">
+         <input type="text" name = "artist3" placeholder="Artist 1" required/>
+        <input type="text" name = "artist2" placeholder="Artist 2" required/>
+        <input type="text" name = "artist1" placeholder="Artist 3" required/>
+         <input type="submit" id="submitButton" value="Get Recommendations" />
+      </form>
+      <div id = "recommendations-output">
+        
+      </div>
+    </main>
+    
+
+    <!-- start Glitch promo stuff :)  -->
+    <footer>Made with <a href="https://glitch.com">Glitch</a>!</footer>
+    <div class="glitchButton" style="position:fixed;top:2em;right:20px;"></div>
+    <!-- Fancy Glitch menu button  -->
+    <script src="https://button.glitch.me/button.js" defer></script>
+    <!-- end Glitch promo stuff :)  -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    
+    <!-- import client-side Javascript file  -->
+    <script src="./script.js" defer></script>
+  </body>
+</html>
